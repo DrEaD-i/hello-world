@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Jar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to right, #ff5858, #ffc117, #ffffff, #6db4e5, #c7d2fe);
+        }
+        #jar {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #ff6384;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transform: rotate(-5deg); 
+        }
+        button:hover {
+            background-color: #ff4264;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        button.shake {
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0% { transform: translate(0, 0); }
+            20% { transform: translate(-5px, 0); }
+            40% { transform: translate(5px, 0); }
+            60% { transform: translate(-5px, 0); }
+            80% { transform: translate(5px, 0); }
+            100% { transform: translate(0, 0); }
+        }
+        #heart {
+            position: relative;
+            width: 150px;
+            height: 135px;
+            margin: 20px auto 0;
+        }
+        #heart:before, #heart:after {
+            position: absolute;
+            content: "";
+            left: 75px;
+            top: 0;
+            width: 75px;
+            height: 120px;
+            border-radius: 75px 75px 0 0;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+            background-color: var(--heart-color); 
+        }
+        #heart:after {
+            left: 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+        .text {
+            position: absolute;
+            color: #eee;
+            z-index: 99;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div id="jar">
+        <button id="shakeButton" onclick="shakeButton()">Shake the Jar</button>
+        <div id="heartContainer"></div>
+    </div>
+    <script>
+        // Messages
+        var messages = ["BE YOU", "BIG FAN", "CHIN UP", "CRUSH IT", "DON’T QUIT", "FEAR LESS", "GO 4 IT", "GOOD JOB", "GO TIME", "HIGH FIVE", "PROUD OF U", "PUSH THRU", "SUPER STAR", "U GOT THIS", "WAY 2 GO", "YOUDA BEST"];
+
+        // Colors with descriptions
+        var colors = [
+            { name: "White (fruit punch)", value: "rgb(255, 86, 162)" },  // Fruit Punch
+            { name: "Yellow (lemon-lime)", value: "rgb(253, 250, 87)" },  // Lemon-Lime
+            { name: "Orange (orange)", value: "rgb(255, 159, 0)" },       // Orange
+            { name: "Green (apple)", value: "rgb(52, 168, 83)" },          // Apple
+            { name: "Pink (cherry)", value: "rgb(233, 30, 99)" },          // Cherry
+            { name: "Blue (blue raspberry)", value: "rgb(66, 133, 244)" }  // Blue Raspberry
+        ];
+
+        function shakeButton() {
+            var button = document.getElementById("shakeButton");
+            button.classList.add("shake");
+
+            // Reset shake animation after 500ms
+            setTimeout(function() {
+                button.classList.remove("shake");
+            }, 500);
+
+            var heartContainer = document.getElementById("heartContainer");
+            heartContainer.innerHTML = ''; 
+
+            var heart = document.createElement("div");
+            heart.id = "heart";
+
+            // Randomly select a message
+            var randomIndexMessage = Math.floor(Math.random() * messages.length);
+            var message = messages[randomIndexMessage];
+
+            // Randomly select a color
+            var randomIndexColor = Math.floor(Math.random() * colors.length);
+            var color = colors[randomIndexColor].value; 
+
+            var text = document.createElement("div");
+            text.className = "text";
+            text.textContent = message; 
+
+            heart.appendChild(text);
+            heartContainer.appendChild(heart);
+
+            // Apply the selected color to the heart
+            heart.style.setProperty('--heart-color', color);
+        }
+    </script>
+</body>
+</html>
