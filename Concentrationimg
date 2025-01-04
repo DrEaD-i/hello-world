@@ -1,0 +1,170 @@
+"A classic concentration game where players match pairs of computer hardware-themed cards by flipping them over, enhanced with shuffled images and smooth animations."
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concentration Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: white;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(6, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 10px;
+            width: 720px;
+            max-width: 100%;
+        }
+
+        .card {
+            width: 100px;
+            height: 100px;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 18px;
+            background-size: cover;
+            transition: transform 0.5s;
+            transform: rotateY(180deg);
+        }
+
+        .card.flip {
+            transform: rotateY(0deg);
+            background: none;
+        }
+
+        .card.hidden {
+            background: #333;
+            color: #333;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>Concentration Game</h1>
+    <div class="container" id="card-container"></div>
+    <script>
+        const cards = [];
+
+        // Map common identifiers to their corresponding image filenames
+        let cardMapping = {
+            'cpu': ['cpu1.jpg', 'cpu1.jpg'],
+            'fan': ['fan1.jpg', 'fan1.jpg'],
+            'gc': ['gc1.jpg', 'gc1.jpg'],
+            'hdd': ['hdd1.jpg', 'hdd1.jpg'],
+            'mb': ['mb1.jpg', 'mb1.jpg'],
+            'monitor': ['monitor1.jpg', 'monitor1.jpg'],
+            'psu': ['psu1.jpg', 'psu1.jpg'],
+            'ram': ['ram1.jpg', 'ram1.jpg'],
+            'ssd': ['ssd1.jpg', 'ssd1.jpg'],
+            'tower': ['tower1.jpg', 'tower1.jpg'],
+            'mnk': ['mnk1.jpg', 'mnk1.jpg'],
+        };
+
+        // Flatten the mapping to create an array of filenames
+        let imageFiles = [].concat(...Object.values(cardMapping));
+
+        // Shuffle the image files array using Fisher-Yates shuffle
+        shuffleArray(imageFiles);
+
+        // Call the function to fetch and display images
+        createCards();
+
+        // Rest of your game logic
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+            } else {
+                secondCard = this;
+                checkForMatch();
+            }
+        }
+
+        function checkForMatch() {
+            let firstImageId = extractIdentifierFromFileName(firstCard.getAttribute('data-card-id'));
+            let secondImageId = extractIdentifierFromFileName(secondCard.getAttribute('data-card-id'));
+
+            if (firstImageId === secondImageId && firstCard !== secondCard) {
+                disableCards(); // If the cards match, disable them
+                console.log('Matching cards!');
+            } else {
+                unflipCards(); // If they don't match, unflip them
+                console.log('Cards do not match.');
+            }
+        }
+
+        function disableCards() {
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+
+                resetBoard();
+            }, 1000);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+
+        // Fisher-Yates shuffle algorithm
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function extractIdentifierFromFileName(fileName) {
+            return fileName.split('.')[0];
+        }
+
+        function createCards() {
+            const container = document.getElementById('card-container');
+
+            imageFiles.forEach((imageFileName, index) => {
+                const cardElement = document.createElement('div');
+                const identifier = extractIdentifierFromFileName(imageFileName);
+                cardElement.classList.add('card');
+                cardElement.style.backgroundImage = `url(${imageFileName})`; // Set the background image
+                cardElement.setAttribute('data-card-id', identifier);
+                cardElement.addEventListener('click', flipCard);
+                container.appendChild(cardElement);
+            });
+        }
+    </script>
+</body>
+</html>
